@@ -6,12 +6,12 @@ public class App {
 
         // define la cantidad de caracteres
         System.out.println("Cantidad de Carateres...: " + cadena.length());
-        // devuelve la oscion de un caracter
-        char posicion1 = cadena.charAt(15);
+        // devuelve la coordenada del caracter
+        char posicion1 = cadena.charAt(14);
         System.out.println("Letra en posición 15: " + posicion1);
-
+        // genera la cadena de una posición inicial a una posición final
         String subFrase = cadena.substring(10, 15);
-        System.out.println("Subfrase: " + subFrase); // devuelve una subcadena desde la posicion x hasta y
+        System.out.println("Subfrase: " + subFrase);
 
         System.out.println(cadena.toLowerCase()); // devuelve la cedena en minusculas
 
@@ -19,4 +19,5 @@ public class App {
 
         System.out.println(cadena.trim()); // elimina los espacios al principio y al final de la cadena
     }
+
 }
