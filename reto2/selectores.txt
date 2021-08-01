@@ -1,0 +1,29 @@
+switch (selector) {
+            case "d":
+                valor = Double.parseDouble(pDispositivos[i].calcularPrecio().substring(1));
+                setTotalDispositivos((getTotalDispositivos() + valor));
+                break;
+            case "p":
+                valor = Double.parseDouble(pDispositivos[i].calcularPrecio().substring(1));
+                setTotalPortatiles((getTotalPortatiles() + valor));
+                break;
+            case "t":
+                valor = Double.parseDouble(pDispositivos[i].calcularPrecio().substring(1));
+                setTotalTablet((getTotalTablet() + valor));
+                break;
+	     default:
+                valor = 0.0;
+                break;
+
+if (selector == "p") {
+                valor = Double.parseDouble(pDispositivos[i].calcularPrecio().substring(1));
+                setTotalPortatiles((getTotalPortatiles() + valor));
+            }
+            if (selector == "t") {
+                valor = Double.parseDouble(pDispositivos[i].calcularPrecio().substring(1));
+                setTotalTablet((getTotalTablet() + valor));
+            }
+            if (selector == "d") {
+                valor = Double.parseDouble(pDispositivos[i].calcularPrecio().substring(1));
+                setTotalDispositivos((getTotalDispositivos() + valor));
+            }

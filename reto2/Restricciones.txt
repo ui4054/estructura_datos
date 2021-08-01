@@ -1,0 +1,50 @@
+consumo
+A-$118
+B-$90
+C-$78
+D-$45
+E-$30
+F-$19
+
+peso
+ENTRE 1 Y 2, $48
+ENTRE 2 Y 3, $39
+ENTRE 3 Y 4, $30
+MAYOR A 4, $25
+
+PORTATILES HDD
+entre 250 y 500 , $40
+entre 500 y 1000, $90
+mayor a 1000, $115
+
+DD_BASE = INICIA CON 250GB
+
+TABLETAS RAM
+ENTRE 1GB Y 2GB, $38
+ENTRE 2GB Y 4GB,$57
+MAYOR A 4GB, $80
+
+RAMBASE = INICIA CON 1GB
+
+
+COONSTRUCTOR DE CLASE CONSUMO BASW = 'F'
+PRECIOBASE = 239.0
+PESO_BASE = 2
+
+ATRIBUTOS DE LA CASE PRECIOTOTAL, DONDE SE LLAMA
+
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        // Your code here!
+        double valdisp = 0.0;
+        String leter;
+        String cadenita = "d12";
+        valdisp = Double.parseDouble(cadenita.substring(1));
+        leter = cadenita.substring(0, 1);
+        System.out.println(leter);
+        System.out.println(String.valueOf(valdisp));
+    }
+}
+
