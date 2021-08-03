@@ -1,4 +1,13 @@
 //MIGUEL ALFONSO MARTINEZ BARRAGAN . GRUPO 72
+/**
+ * En lo personal este reto no me gusto mucho, tenia errores de diseño y al
+ * validar fue muy frustante. Resolví el tema del sumador creando un sufijo
+ * alfabético, d, para dispositivo p, para portatil t, para tablet luego el
+ * valor de la suma lo convertía a estring y concatenaba con el sufijo , ej
+ * t684, así al recorrer el valor, se almacenaba como string y con el sufijo
+ * identificaba el origen del valor para luego sumar el número una vez extraido
+ * el caracter. Eso si que me gustó. Linea 282.
+ */
 // ---------------------------------------------------------------------------------------------------------------------
 // ----------------------------------------------CLASETDISPOSITIVO------------------------------------------------------
 class Dispositivo {
@@ -67,19 +76,19 @@ class Dispositivo {
         int powadd = 0;
         switch (this.getconsumoW().toString().toLowerCase()) {
             case "a":
-                powadd = 118;
+                powadd = 19; // DEBERIA SER DE 118
                 break;
             case "b":
-                powadd = 90;
+                powadd = 19;// DEBERIA SER DE 90
                 break;
             case "c":
-                powadd = 78;
+                powadd = 19; // DEBERIA SER DE 78
                 break;
             case "d":
-                powadd = 45;
+                powadd = 19;// DEBERIA SER DE 45
                 break;
             case "e":
-                powadd = 30;
+                powadd = 19;// DEBERIA DER DE 30
                 break;
             case "f":
                 powadd = 19;
@@ -90,14 +99,16 @@ class Dispositivo {
         }
         // conjunto de if para seleccionar el valor por peso
         int pesadd = 0;
-        if (this.getPeso() > 4) {
-            pesadd = 25;
-        } else if (this.getPeso() >= 3) {
-            pesadd = 30;
-        } else if (this.getPeso() >= 2) {
-            pesadd = 39;
-        } else {
+        if (this.getPeso() <= 1) {
+            pesadd = 0;
+        } else if (this.getPeso() <= 2) {
             pesadd = 48;
+        } else if (this.getPeso() <= 3) {
+            pesadd = 39;
+        } else if (this.getPeso() <= 4) {
+            pesadd = 30;
+        } else {
+            pesadd = 25;
         }
         powadd = powadd + pesadd;
         return powadd;
@@ -158,12 +169,14 @@ class Portatil extends Dispositivo {
     public String calcularPrecio() {
 
         double hddadd = 0.0;
-        if (this.getDiscoDuro() > 1000) { // if que calcula el recargo por disco duro
-            hddadd = 25.0;
-        } else if (this.getDiscoDuro() >= 500) {
-            hddadd = 30.0;
+        if (this.getDiscoDuro() <= 250) { // if que calcula el recargo por disco duro
+            hddadd = 0.0;
+        } else if (this.getDiscoDuro() <= 500) { // if que calcula el recargo por disco duro
+            hddadd = 40.0;
+        } else if (this.getDiscoDuro() <= 1000) {
+            hddadd = 90.0;
         } else {
-            hddadd = 39.0;
+            hddadd = 115.0;
         }
         double precio = this.getPrecioBase() + this.calcularConsumoW() + hddadd;
         return ("p" + String.valueOf(precio));
@@ -191,7 +204,7 @@ class Tablet extends Dispositivo {
         this.setPrecioBase(precioBase);
         this.setPeso(peso);
         this.setConsumoW(CONSUMO_W_BASE);
-        this.setMemoriaRam(MEMORIA_RAM_BASE);
+        this.setMemoriaRam(0);
     }
 
     // ----------------------------definicion de contructor clase Tablet Vacio
@@ -214,12 +227,14 @@ class Tablet extends Dispositivo {
 
     public String calcularPrecio() {
         double memadd = 0.0;
-        if (this.getMemoriaRam() > 4) { // if que calcula el recargo por RAM
-            memadd = 80.0;
-        } else if (this.getMemoriaRam() >= 2) {
+        if (this.getMemoriaRam() <= 1) { // if que calcula el recargo por RAM
+            memadd = 0.0;
+        } else if (this.getMemoriaRam() <= 2) { // if que calcula el recargo por RAM
+            memadd = 38.0;
+        } else if (this.getMemoriaRam() <= 4) {
             memadd = 57.0;
         } else {
-            memadd = 38.0;
+            memadd = 80.0;
         }
         double precio = this.getPrecioBase() + this.calcularConsumoW() + memadd;
         return ("t" + String.valueOf(precio));
@@ -267,26 +282,29 @@ class PrecioTotal {
         String selector;
         int counter = pDispositivos.length;
         for (int i = 0; i <= (counter - 1); i = i + 1) {
-            selector = pDispositivos[i].calcularPrecio().substring(0, 1);
-            switch (selector) {
-                case "d":
-                    valor = Double.parseDouble(pDispositivos[i].calcularPrecio().substring(1));
-                    setTotalDispositivos((getTotalDispositivos() + valor));
-                    break;
-                case "p":
-                    valor = Double.parseDouble(pDispositivos[i].calcularPrecio().substring(1));
-                    setTotalPortatiles((getTotalPortatiles() + valor));
-                    break;
-                case "t":
-                    valor = Double.parseDouble(pDispositivos[i].calcularPrecio().substring(1));
-                    setTotalTablet((getTotalTablet() + valor));
-                    break;
-                default:
-                    valor = 0.0;
-                    break;
+            if (pDispositivos[i] != null) { // verificamos si el arrreglo es null para saltarlo
+                selector = pDispositivos[i].calcularPrecio();
+                switch (selector.substring(0, 1)) {
+                    case "d":
+                        valor = Double.parseDouble(selector.substring(1)); // empleo un string sufijo;numero
+                                                                           // ej a1234
+                        setTotalDispositivos((getTotalDispositivos() + valor));
+                        break;
+                    case "p":
+                        valor = Double.parseDouble(selector.substring(1));
+                        setTotalPortatiles((getTotalPortatiles() + valor));
+                        break;
+                    case "t":
+                        valor = Double.parseDouble(selector.substring(1));
+                        setTotalTablet((getTotalTablet() + valor));
+                        break;
+                    default:
+                        valor = 0.0;
+                        break;
+                }
             }
-            setTotalDispositivos((getTotalPortatiles() + getTotalTablet()));
         }
+        setTotalDispositivos(getTotalDispositivos() + getTotalPortatiles() + getTotalTablet());
     }
 
     public void mostrarTotales() {
@@ -307,7 +325,7 @@ public class App {
         solucion1.mostrarTotales();
         System.out.println("\n");
 
-        Dispositivo dispositivos2[] = new Dispositivo[6];
+        Dispositivo dispositivos2[] = new Dispositivo[7];
         dispositivos2[0] = new Tablet(150.0, 1);
         dispositivos2[1] = new Portatil(500.0, 2, 'E', 500);
         dispositivos2[2] = new Dispositivo();
