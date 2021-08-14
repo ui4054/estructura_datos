@@ -1,0 +1,419 @@
+//Librerías
+import java.util.ArrayList;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+//Vista
+
+    class VistaRequerimientosReto4 {
+
+    public static final ControladorRequerimientosReto4 controlador = new ControladorRequerimientosReto4();
+
+    // vista por consola requerimiento1
+    public static void requerimiento1() {
+        System.out.println("*** Lideres con mayor salario ***");
+
+        try {
+
+            ArrayList<LideresMayorSalario> rankingLideresMayorSalarios = controlador.consultarLideresMayorSalarios();
+
+            // Encabezado de resultado
+            System.out.println("ID_Lider  Nombre  Primer_Apellido");
+
+            // Cada VO cargado, mostrarlo en la vista
+            for (LideresMayorSalario lideresMayors : rankingLideresMayorSalarios) {
+                System.out.printf("      %d  %s   %s  %n", lideresMayors.getIDLider(), lideresMayors.getNombre(),
+                        lideresMayors.getPrimerApellido());
+            }
+        } catch (SQLException e) {
+            System.err.println("Ha ocurrido un erropr!" + e.getMessage());
+        }
+    }
+
+    // vista por consola requerimiento3
+    public static void requerimiento3() {
+        System.out.println("*** Lideres proyectos emblemáticos ***");
+
+        try {
+
+            ArrayList<LideresProyectosEmblematicos> rankingProyectosEmblematicos = controlador
+                    .consultarLideresProyectosEmblematicos();
+
+            // Encabezado de resultado
+            System.out.println("Id_Lider Id_Proyecto Id_Tipo");
+
+            // Cada VO cargado, mostrarlo en la vista
+            for (LideresProyectosEmblematicos lideresProyectosE : rankingProyectosEmblematicos) {
+                System.out.printf("      %d         %d       %d %n", lideresProyectosE.getIDLider(),
+                        lideresProyectosE.getIDProyecto(), lideresProyectosE.getIDTipo());
+            }
+        } catch (SQLException e) {
+            System.err.println("Ha ocurrido un error!" + e.getMessage());
+        }
+    }
+
+    // vista por consola requerimiento4
+    public static void requerimiento4() {
+        System.out.println("*** Productos importados ***");
+
+        try {
+
+            ArrayList<MaterialRankeadoImportado> rankingMaterialesImportados = controlador
+                    .consultarMaterialRankeadoImportados();
+
+            // Encabezado de resultado
+            //System.out.println("El producto de ID %d de descripcion: %s de tipo importado(a), tiene un precio de %d %n");
+
+            // Cada VO cargado, mostrarlo en la vista
+            for (MaterialRankeadoImportado materialesImportados : rankingMaterialesImportados) {
+                System.out.println("El producto de ID "+ materialesImportados.getIdMaterial()+ " de descripción: "+ materialesImportados.getNombreMaterial()+" de tipo importado(a), tiene un precio de "+ materialesImportados.getPrecioUnidad());
+            }
+        } catch (SQLException e) {
+            System.err.println("Ha ocurrido un error!" + e.getMessage());
+        }
+    }
+
+}
+
+//Controlador
+
+    class ControladorRequerimientosReto4 {
+    // instanciamos los objetos DAO para la gestión de las lalamdas de datos
+    private final LideresMayorSalarioDao lideresMayorSalarioDao;
+    private final LideresProyectosEmblematicosDao lideresProyectosEmblematicosDao;
+    private final MaterialRankeadoImportadoDao materialRankeadoImportadoDao;
+
+    public ControladorRequerimientosReto4() {
+        this.lideresMayorSalarioDao = new LideresMayorSalarioDao();
+        this.lideresProyectosEmblematicosDao = new LideresProyectosEmblematicosDao();
+        this.materialRankeadoImportadoDao = new MaterialRankeadoImportadoDao();
+    }
+
+    // metodo para llamar los datos del DAO
+    public ArrayList<LideresMayorSalario> consultarLideresMayorSalarios() throws SQLException {
+        return this.lideresMayorSalarioDao.rankingLideresMayorSalario();
+    }
+
+    public ArrayList<LideresProyectosEmblematicos> consultarLideresProyectosEmblematicos() throws SQLException {
+        return this.lideresProyectosEmblematicosDao.rankingLideresProyectosEmblematicos();
+    }
+
+    public ArrayList<MaterialRankeadoImportado> consultarMaterialRankeadoImportados() throws SQLException {
+        return this.materialRankeadoImportadoDao.rankingMaterialRankeadoImportado();
+    }
+}
+
+
+
+
+//DAO's
+public class LideresMayorSalarioDao {
+
+    // Obtener los 10 p´royectos rankeados según las compras
+
+    public ArrayList<LideresMayorSalario> rankingLideresMayorSalario() throws SQLException {
+        ArrayList<LideresMayorSalario> respuesta = new ArrayList<LideresMayorSalario>();
+        Connection conexion = JDBCUtilities.getConnection();
+
+        try {
+            String consulta = "SELECT ID_Lider, Nombre, Primer_Apellido " + "FROM Lider "
+                    + "WHERE Salario > 100000 AND Ciudad_Residencia = 'Cartagena' " + "ORDER BY ID_Lider ";
+
+            PreparedStatement statement = conexion.prepareStatement(consulta);
+            ResultSet resultSet = statement.executeQuery();
+
+            // Recorrer los registros VO específicos
+            while (resultSet.next()) {
+                LideresMayorSalario lideresMayorSalario = new LideresMayorSalario();
+                lideresMayorSalario.setIDLider(resultSet.getInt("ID_Lider"));
+                lideresMayorSalario.setNombre(resultSet.getString("Nombre"));
+                lideresMayorSalario.setPrimerApellido(resultSet.getString("Primer_Apellido"));
+
+                // se agrega cada registro como un objeto del ArrayList que continene la
+                // consulta
+                respuesta.add(lideresMayorSalario);
+            }
+
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            System.err.println("Error consultando ranking de los lideres con mayor: " + e);
+        } finally {
+            if (conexion != null) {
+                conexion.close();
+            }
+        }
+        // retonar la conelcción de VO
+        return respuesta;
+    }
+}
+
+//---------------------
+
+public class LideresProyectosEmblematicosDao {
+
+    // Obtener los 10 p´royectos rankeados según las compras
+
+    public ArrayList<LideresProyectosEmblematicos> rankingLideresProyectosEmblematicos() throws SQLException {
+        ArrayList<LideresProyectosEmblematicos> respuesta = new ArrayList<LideresProyectosEmblematicos>();
+        Connection conexion = JDBCUtilities.getConnection();
+
+        try {
+            String consulta = "SELECT ID_Lider, ID_Proyecto, ID_Tipo " + "FROM Proyecto "
+                    + "WHERE (ID_Proyecto BETWEEN 180 AND 195) " + "GROUP BY ID_lider ORDER BY ID_Lider ";
+
+            PreparedStatement statement = conexion.prepareStatement(consulta);
+            ResultSet resultSet = statement.executeQuery();
+
+            // Recorrer los registros VO específicos
+            while (resultSet.next()) {
+                LideresProyectosEmblematicos lideresProyectosEmblematicos = new LideresProyectosEmblematicos();
+                lideresProyectosEmblematicos.setIDLider(resultSet.getInt("ID_Lider"));
+                lideresProyectosEmblematicos.setIDProyecto(resultSet.getInt("ID_Proyecto"));
+                lideresProyectosEmblematicos.setIDTipo(resultSet.getInt("ID_Tipo"));
+
+                // se agrega cada registro como un objeto del ArrayList que continene la
+                // consulta
+                respuesta.add(lideresProyectosEmblematicos);
+            }
+
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            System.err.println("Error consultando ranking de los 10 proyectos con mayor gasto por compras: " + e);
+        } finally {
+            if (conexion != null) {
+                conexion.close();
+            }
+        }
+        // retonar la conelcción de VO
+        return respuesta;
+    }
+}
+
+//------------------------
+
+     class MaterialRankeadoImportadoDao {
+    // Obtener los 10 p´royectos rankeados según las compras
+
+    public ArrayList<MaterialRankeadoImportado> rankingMaterialRankeadoImportado() throws SQLException {
+        ArrayList<MaterialRankeadoImportado> respuesta = new ArrayList<MaterialRankeadoImportado>();
+        Connection conexion = JDBCUtilities.getConnection();
+
+        try {
+            String consulta = "SELECT ID_MaterialConstruccion, Nombre_Material, Precio_Unidad "
+                    + "FROM MaterialConstruccion " + "WHERE Importado = 'Si' AND Precio_Unidad >= 2000 "
+                    + "ORDER BY ID_MaterialConstruccion";
+
+            PreparedStatement statement = conexion.prepareStatement(consulta);
+            ResultSet resultSet = statement.executeQuery();
+
+            // Recorrer los registros VO específicos
+            while (resultSet.next()) {
+                MaterialRankeadoImportado materialRankeadoImportado = new MaterialRankeadoImportado();
+                materialRankeadoImportado.setIdMaterial(resultSet.getInt("ID_MaterialConstruccion"));
+                materialRankeadoImportado.setNombreMaterial(resultSet.getString("Nombre_Material"));
+                materialRankeadoImportado.setPrecioUnidad(resultSet.getInt("Precio_Unidad"));
+
+                // se agrega cada registro como un objeto del ArrayList que continene la
+                // consulta
+                respuesta.add(materialRankeadoImportado);
+            }
+
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            System.err.println("Error consultando ranking de los 10 proyectos con mayor gasto por compras: " + e);
+        } finally {
+            if (conexion != null) {
+                conexion.close();
+            }
+        }
+        // retonar la conelcción de VO
+        return respuesta;
+    }
+}
+
+
+
+//VO's
+
+     class LideresMayorSalario {
+    private Integer idLider;
+    private String nombre;
+    private String primerApellido;
+    private Integer salario;
+    private String ciudadNacimiento;
+
+    public LideresMayorSalario() {
+    }
+
+    public LideresMayorSalario(Integer idLider, String nombre, String primerApellido, Integer salario,
+            String ciudadNacimiento) {
+        this.idLider = idLider;
+        this.nombre = nombre;
+        this.primerApellido = primerApellido;
+        this.salario = salario;
+        this.ciudadNacimiento = ciudadNacimiento;
+    }
+
+    public Integer getIDLider() {
+        return idLider;
+    }
+
+    public void setIDLider(Integer idLider) {
+        this.idLider = idLider;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getPrimerApellido() {
+        return primerApellido;
+    }
+
+    public void setPrimerApellido(String primerApellido) {
+        this.primerApellido = primerApellido;
+    }
+
+    public Integer salario() {
+        return salario;
+    }
+
+    public void setsalario(Integer salario) {
+        this.salario = salario;
+    }
+
+    public String getCiudadNacimiento() {
+        return ciudadNacimiento;
+    }
+
+    public void setCiudadNacimiento(String ciudadNacimiento) {
+        this.ciudadNacimiento = ciudadNacimiento;
+    }
+}
+
+//----------------
+
+     class LideresProyectosEmblematicos {
+    private Integer idLider;
+    private Integer idProyecto;
+    private Integer idTipo;
+
+    public LideresProyectosEmblematicos() {
+    }
+
+    public Integer getIDLider() {
+        return idLider;
+    }
+
+    public void setIDLider(Integer idLider) {
+        this.idLider = idLider;
+    }
+
+    public Integer getIDProyecto() {
+        return idProyecto;
+    }
+
+    public void setIDProyecto(Integer idProyecto) {
+        this.idProyecto = idProyecto;
+    }
+
+    public Integer getIDTipo() {
+        return idTipo;
+    }
+
+    public void setIDTipo(Integer idTipo) {
+        this.idTipo = idTipo;
+    }
+}
+
+//-------------------
+
+      class MaterialRankeadoImportado {
+    private Integer idMaterial;
+    private String nombreMaterial;
+    private Integer precioUnidad;
+    private String importado;
+
+    public MaterialRankeadoImportado() {
+    }
+
+    public MaterialRankeadoImportado(Integer idMaterial, String nombreMaterial, Integer precioUnidad,
+            String importado) {
+        this.idMaterial = idMaterial;
+        this.nombreMaterial = nombreMaterial;
+        this.precioUnidad = precioUnidad;
+        this.importado = importado;
+    }
+
+    public Integer getIdMaterial() {
+        return idMaterial;
+    }
+
+    public void setIdMaterial(Integer idMaterial) {
+        this.idMaterial = idMaterial;
+    }
+
+    public String getNombreMaterial() {
+        return nombreMaterial;
+    }
+
+    public void setNombreMaterial(String nombreMaterial) {
+        this.nombreMaterial = nombreMaterial;
+    }
+
+    public Integer getPrecioUnidad() {
+        return precioUnidad;
+    }
+
+    public void setPrecioUnidad(Integer precioUnidad) {
+        this.precioUnidad = precioUnidad;
+    }
+
+    public String getImportado() {
+        return importado;
+    }
+
+    public void setImportado(String importado) {
+        this.importado = importado;
+    }
+}
+
+
+
+
+
+//Utils
+public class JDBCUtilities {
+
+    //Atributos de clase para gestión de conexión con la base de datos
+    private static final String UBICACION_BD = "ProyectosConstruccion.db";    
+
+    public static Connection getConnection() throws SQLException {
+        String url = "jdbc:sqlite:" + UBICACION_BD;        
+        return DriverManager.getConnection(url);
+    }
+
+    public static boolean estaVacia(){
+        File archivo = new File(JDBCUtilities.UBICACION_BD);
+        // //Salida de diagnóstixo
+        // System.out.println("UBICACION -> "+ JDBCUtilities.UBICACION_BD);
+        // System.out.println("Longitud -> "+ archivo.length());
+        return archivo.length() == 0;
+    }
+
+}
+
+
+
+
